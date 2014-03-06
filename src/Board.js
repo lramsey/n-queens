@@ -51,7 +51,16 @@
       return results;
     },
     minorDiagonals: function () {
-
+      var results = [];
+      for(var diags = 0; diags < 2*this.rows().length - 1; diags++){
+        results.push([]);
+      }
+      for(var row=0; row < this.rows().length; row++){
+        for(var col=0; col < this.rows().length; col++){
+          results[col + row].push(this.rows()[row][col]);
+        }
+      }
+      return results;
     },
     togglePiece: function(rowIndex, colIndex) {
       this.get(rowIndex)[colIndex] = + !this.get(rowIndex)[colIndex];
@@ -158,22 +167,23 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalIndex) {
-      // var thisMajorDiags = this.majorDiagonals()[majorDiagonalIndex];
-      // var result = _.reduce(thisMajorDiags, function (a, c) {
-      //   return a + c;
-      // });
-      // return (result > 1);
+      var folcrum = this.rows().length-1;
+      var thisMajorDiags = this.majorDiagonals()[majorDiagonalIndex + folcrum];
+      var result = _.reduce(thisMajorDiags, function (a, c) {
+        return a + c;
+      });
+      return (result > 1);
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      // var allMajorDiags = this.majorDiagonals();
-      // for (var i = 0; i < allMajorDiags.length; i += 1) {
-      //   if (this.hasMajorDiagonalConflictAt(i)) {
-      //     return true;
-      //   }
-      // }
-      // return false;
+      var allMajorDiags = this.majorDiagonals();
+      for (var i = 0; i < allMajorDiags.length; i += 1) {
+        if (this.hasMajorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      return false;
     },
 
 
@@ -182,13 +192,23 @@
     // --------------------------------------------------------------
     //
     // test if a specific minor diagonal on this board contains a conflict
-    hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+    hasMinorDiagonalConflictAt: function(minorDiagonalIndex) {
+      var thisMinorDiags = this.minorDiagonals()[minorDiagonalIndex];
+      var result = _.reduce(thisMinorDiags, function (a, c) {
+        return a + c;
+      });
+      return (result > 1);
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var allMinorDiags = this.minorDiagonals();
+      for (var i = 0; i < allMinorDiags.length; i += 1) {
+        if (this.hasMinorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
