@@ -36,16 +36,19 @@
       }
       return results;
     },
+    getValueAt: function(row, col){
+      return this.rows()[row][col];
+    },
     majorDiagonals: function () {
       //swap this.get() can replace rows, maybe more efficient
       var results = [];
-      var folcrum = this.rows().length-1;
+      var fulcrum = this.rows().length-1;
       for(var diags = 0; diags < 2*this.rows().length - 1; diags++){
         results.push([]);
       }
       for(var row=0; row < this.rows().length; row++){
         for(var col=0; col < this.rows().length; col++){
-          results[col + folcrum - row].push(this.rows()[row][col]);
+          results[col + fulcrum - row].push(this.rows()[row][col]);
         }
       }
       return results;
@@ -167,8 +170,8 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalIndex) {
-      var folcrum = this.rows().length-1;
-      var thisMajorDiags = this.majorDiagonals()[majorDiagonalIndex + folcrum];
+      var fulcrum = this.rows().length-1;
+      var thisMajorDiags = this.majorDiagonals()[majorDiagonalIndex + fulcrum];
       var result = _.reduce(thisMajorDiags, function (a, c) {
         return a + c;
       });
