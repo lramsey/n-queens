@@ -59,39 +59,41 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutions = [];
+  var solutions = 0;
   var board = new Board({n:n});
+  var column = {};
 
   var recursiveRook = function (b, currentRow) {
     for (var col = 0; col < n; col++) {
-      b.togglePiece(currentRow, col);
-      if (currentRow === n - 1) {
-        var matrix = [];
-        for(var inner = 0; inner< b.rows().length; inner++){
-          matrix.push(b.rows()[inner].slice());
+      if (column[col] !== true) {
+        b.togglePiece(currentRow, col);
+        column[col] = true;
+        // if(!column[col]){
+        //   b.togglePiece(currentRow, col);
+        //   continue;
+        // }
+        if (currentRow === n - 1) {
+          solutions++;
+        } else {
+          recursiveRook(b, currentRow + 1);
         }
-        var tempBoard = new Board(matrix);
-        solutions.push(tempBoard);
-      } else {
-        recursiveRook(b, currentRow + 1);
+        b.togglePiece(currentRow, col);
+        column[col] = false;
       }
-      b.togglePiece(currentRow, col);
     }
   };
-  recursiveRook(board, 0);
-  solutions = _.filter(solutions, function (board) {
-    return !board.hasAnyRooksConflicts();
-  });
-  // console.dir(solutions);
-  // console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutions.length;
+  if(n>0){
+    recursiveRook(board, 0);
+  }
+  //console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  return solutions;
 };
 
 
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  /*var solution = new Board({n:n});
+  var solution = new Board({n:n});
   for(var row = 0; row < n; row++){
     for(var col = 0; col < n; col++){
       solution.togglePiece(row, col);
@@ -102,7 +104,7 @@ window.findNQueensSolution = function(n) {
     }
   }
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution.rows();*/
+  return solution.rows();
 };
 
 
