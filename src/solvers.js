@@ -59,44 +59,32 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  if(n === 1){
-    return 1
-  } else{
-    return n*window.countNRooksSolutions(n-1);
-  }
-  // expect inner function to return an array of arrays, where the inner array contains row / column positions of a valid rook
-  // input is a number corresponding to the number of rows
-  /*var fn = function (n) {
-    var array = [];
-    var board = new Board({n: n});
-    for (var row = 0; row < n; row++) {
-      board.togglePiece(row, 0);
-      if (n !== 1) {
-        array = fn(n - 1);
-        for (var i = 0; i < array.length; i += 1) {
-          var validBoard = [];
-          for (var j = 0; j < array[i].length; j += 1) {
-            if (array[i][j][0] >= row) {
-              array[i][j][0] += 1;
-            }
-            if (array[i][j][1] >= 0) {
-              array[i][j][1] += 1; 
-            }
-            validBoard.push(array[i][j]);
-          }
+  var solutions = [];
+  var board = new Board({n:n});
 
+  var recursiveRook = function (b, currentRow) {
+    for (var col = 0; col < n; col++) {
+      b.togglePiece(currentRow, col);
+      if (currentRow === n - 1) {
+        var matrix = [];
+        for(var inner = 0; inner< b.rows().length; inner++){
+          matrix.push(b.rows()[inner].slice());
         }
+        var tempBoard = new Board(matrix);
+        solutions.push(tempBoard);
+      } else {
+        recursiveRook(b, currentRow + 1);
       }
+      b.togglePiece(currentRow, col);
     }
-    return array;
   };
-
-  for (var row = 0; row < n; row += 1) {
-
-  }*/
-
+  recursiveRook(board, 0);
+  solutions = _.filter(solutions, function (board) {
+    return !board.hasAnyRooksConflicts();
+  });
+  // console.dir(solutions);
   // console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  return solutions.length;
 };
 
 
