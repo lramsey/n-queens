@@ -20,37 +20,6 @@ window.findNRooksSolution = function(n) {
     board.togglePiece(i, i);
   }
 
-  // var solution = [];
-  // if (n === 1) {
-  //   return [0, 0];
-  //   // returns a length 2 array where index 0 is the row and index 1 is the column.
-  //   // return position of the where rook is at 
-  //   // return new Board({n: 1});
-  //   // solution.push(new Board([1]));
-  // } else {
-  //   for (var row = 0; row < n; row++) {
-  //     for (var col = 0; col < n; col++) {
-  //       var board = new Board({n: n}); // can be generalized by using the value of n (i.e. {n: n})
-  //       board.togglePiece(row, col);
-  //       var lowerSolution = findNRooksSolution(n - 1);
-  //       // lowerSolutions will produce an array of valid rook positions in the context of the smaller findNRook problem
-  //       for (var rookPositions = 0; rookPositions < lowerSolution.length; rookPositions++) {
-  //         if (lowerSolution[rookPositions][0] === row) {
-  //           lowerSolution[rookPositions][0] += 1;
-  //         }
-  //         if (lowerSolution[rookPositions][1] === col) {
-  //           lowerSolution[rookPositions][1] += 1;
-  //         }
-  //         board.togglePiece(lowerSolution[rookPositions][0], lowerSolution[rookPositions][1]);
-  //         solution.push(board);
-  //       }
-  //       // eliminate all rows and all cols with conflict
-  //       // and remove those rows and cols
-  //       // and pass remaining board into findNRooksSolution(n - 1)
-  //     }
-  //   }
-  // }
-
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(board));
   return board.rows();
 };
@@ -93,25 +62,71 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = new Board({n:n});
-  for(var row = 0; row < n; row++){
-    for(var col = 0; col < n; col++){
-      solution.togglePiece(row, col);
-      console.log(solution.rows());
-      if(solution.hasAnyQueensConflicts()){
-        solution.togglePiece(row, col);
+  var solutions = [];
+  var board = new Board({n:n});
+  var column = {};
+  var minorDiags = {};
+  var majorDiags = {};
+
+  var recursiveQueen = function (b, currentRow) {
+    for (var col = 0; col < n; col++) {
+      if (column[col] !== true && majorDiags[col - currentRow] !== true && minorDiags[col + currentRow] !== true) {
+        b.togglePiece(currentRow, col);
+        column[col] = true;
+        majorDiags[col - currentRow] = true;
+        minorDiags[col + currentRow] = true;
+        if (currentRow === n - 1) {
+          solutions.push(b);
+          return;
+        } else {
+          recursiveQueen(b, currentRow + 1);
+        }
+        b.togglePiece(currentRow, col);
+        column[col] = false;
+        majorDiags[col - currentRow] = false;
+        minorDiags[col + currentRow] = false;
       }
     }
+  };
+  if(n>0){
+    recursiveQueen(board, 0);
   }
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution.rows();
+
+  return solutions;
 };
 
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutions = 0;
+  var board = new Board({n:n});
+  var column = {};
+  var minorDiags = {};
+  var majorDiags = {};
 
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+  var recursiveQueen = function (b, currentRow) {
+    for (var col = 0; col < n; col++) {
+      if (column[col] !== true && majorDiags[col - currentRow] !== true && minorDiags[col + currentRow] !== true) {
+        b.togglePiece(currentRow, col);
+        column[col] = true;
+        majorDiags[col - currentRow] = true;
+        minorDiags[col + currentRow] = true;
+        if (currentRow === n - 1) {
+          solutions++;
+        } else {
+          recursiveQueen(b, currentRow + 1);
+        }
+        b.togglePiece(currentRow, col);
+        column[col] = false;
+        majorDiags[col - currentRow] = false;
+        minorDiags[col + currentRow] = false;
+      }
+    }
+  };
+  if(n>0){
+    recursiveQueen(board, 0);
+  } else if (n === 0){
+    return 1;
+  }
+  return solutions;
 };
