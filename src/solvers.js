@@ -99,34 +99,26 @@ window.findNQueensSolution = function(n) {
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
   var solutions = 0;
-  var board = new Board({n:n});
-  var column = {};
-  var minorDiags = {};
-  var majorDiags = {};
-
-  var recursiveQueen = function (b, currentRow) {
-    for (var col = 0; col < n; col++) {
-      if (column[col] !== true && majorDiags[col - currentRow] !== true && minorDiags[col + currentRow] !== true) {
-        b.togglePiece(currentRow, col);
-        column[col] = true;
-        majorDiags[col - currentRow] = true;
-        minorDiags[col + currentRow] = true;
-        if (currentRow === n - 1) {
-          solutions++;
-        } else {
-          recursiveQueen(b, currentRow + 1);
+  var recursiveBitQueens = function(r, c, m, M){
+    if (r === n){
+      solutions++;
+    } else {
+      for(var i = 0; i < n; i++){
+        var b = (Math.pow(2, i));
+        if( ( (c&b) | (m&b) | (M&b) ) === 0 ){
+          next_c = c + b;
+          next_m = ((m + b) << 1) % Math.pow(2, n);
+          next_M = (M + b) >> 1;
+          recursiveBitQueens(r+1, next_c, next_m, next_M);
         }
-        b.togglePiece(currentRow, col);
-        column[col] = false;
-        majorDiags[col - currentRow] = false;
-        minorDiags[col + currentRow] = false;
       }
     }
   };
-  if(n>0){
-    recursiveQueen(board, 0);
-  } else if (n === 0){
+  if(n === 0 || n === 1){
     return 1;
+  } else if (n > 1 && n < 4){
+    return 0;
   }
+  recursiveBitQueens(0, 0, 0, 0);
   return solutions;
 };
