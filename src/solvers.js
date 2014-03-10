@@ -28,34 +28,13 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutions = 0;
-  var board = new Board({n:n});
-  var column = {};
-
-  var recursiveRook = function (b, currentRow) {
-    for (var col = 0; col < n; col++) {
-      if (column[col] !== true) {
-        b.togglePiece(currentRow, col);
-        column[col] = true;
-        // if(!column[col]){
-        //   b.togglePiece(currentRow, col);
-        //   continue;
-        // }
-        if (currentRow === n - 1) {
-          solutions++;
-        } else {
-          recursiveRook(b, currentRow + 1);
-        }
-        b.togglePiece(currentRow, col);
-        column[col] = false;
-      }
-    }
-  };
-  if(n>0){
-    recursiveRook(board, 0);
+  if (n === 0 || n === 1){
+    return 1;
+  } else {
+    for(var i = 0; i < n; i++){
+      return n*countNRooksSolutions(n-1);
+   }
   }
-  //console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutions;
 };
 
 
@@ -99,26 +78,21 @@ window.findNQueensSolution = function(n) {
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
   var solutions = 0;
-  var recursiveBitQueens = function(r, c, m, M){
-    if (r === n){
+  var recursiveBitQueens = function(c, m, M){
+    if (c === ((1<<n)-1)){
       solutions++;
     } else {
       for(var i = 0; i < n; i++){
-        var b = (Math.pow(2, i));
+        var b = 1 << i;
         if( ( (c&b) | (m&b) | (M&b) ) === 0 ){
           next_c = c + b;
-          next_m = ((m + b) << 1) % Math.pow(2, n);
+          next_m = (((m + b) << 1) % (1 << n));
           next_M = (M + b) >> 1;
-          recursiveBitQueens(r+1, next_c, next_m, next_M);
+          recursiveBitQueens(next_c, next_m, next_M);
         }
       }
     }
   };
-  if(n === 0 || n === 1){
-    return 1;
-  } else if (n > 1 && n < 4){
-    return 0;
-  }
-  recursiveBitQueens(0, 0, 0, 0);
+  recursiveBitQueens(0, 0, 0);
   return solutions;
 };
